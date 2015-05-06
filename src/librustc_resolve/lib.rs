@@ -3707,6 +3707,42 @@ pub fn resolve_crate<'a, 'tcx>(session: &'a Session,
     }
 }
 
+/// Entry point to crate resolution.
+pub fn resolve_c<'a, 'tcx>(session: &'a Session,
+                               ast_map: &'a ast_map::Map<'tcx>,
+                               _: &LanguageItems,
+                               krate: &Crate,
+                               make_glob_map: MakeGlobMap)
+                               -> CrateMap {
+    let mut resolver = Resolver::new(session, ast_map, krate.span, make_glob_map);
+
+    build_reduced_graph::build_reduced_graph(&mut resolver, krate);
+    session.abort_if_errors();
+
+    resolve_imports::resolve_imports(&mut resolver);
+    session.abort_if_errors();
+
+    record_exports::record(&mut resolver);
+    session.abort_if_errors();
+
+    resolver.resolve_crate(krate);
+    session.abort_if_errors();
+
+    check_unused::check_crate(&mut resolver, krate);
+
+    CrateMap {
+        def_map: resolver.def_map,
+        freevars: resolver.freevars,
+        export_map: resolver.export_map,
+        trait_map: resolver.trait_map,
+        external_exports: resolver.external_exports,
+        glob_map: if resolver.make_glob_map {
+                        Some(resolver.glob_map)
+                    } else {
+                        None
+                    },
+    }
+}
 #[cfg(stage0)]
 __build_diagnostic_array! { DIAGNOSTICS }
 #[cfg(not(stage0))]
