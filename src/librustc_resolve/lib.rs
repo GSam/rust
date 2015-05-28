@@ -64,8 +64,7 @@ use rustc::util::lev_distance::lev_distance;
 
 use syntax::ast::{Arm, BindByRef, BindByValue, BindingMode, Block};
 use syntax::ast::{ConstImplItem, Crate, CrateNum};
-use syntax::ast::{Decl, DeclItem, DeclLocal, DefId};
-use syntax::ast::{Expr, ExprAgain, ExprBreak, ExprField};
+use syntax::ast::{DefId, Expr, ExprAgain, ExprBreak, ExprField};
 use syntax::ast::{ExprLoop, ExprWhile, ExprMethodCall};
 use syntax::ast::{ExprPath, ExprStruct, FnDecl};
 use syntax::ast::{ForeignItemFn, ForeignItemStatic, Generics};
@@ -74,7 +73,7 @@ use syntax::ast::{ItemFn, ItemForeignMod, ItemImpl, ItemMac, ItemMod, ItemStatic
 use syntax::ast::{ItemStruct, ItemTrait, ItemTy, ItemUse};
 use syntax::ast::{Local, MethodImplItem, Name, NodeId};
 use syntax::ast::{Pat, PatEnum, PatIdent, PatLit, PatQPath};
-use syntax::ast::{PatRange, PatStruct, Path, PathSegment, PrimTy};
+use syntax::ast::{PatRange, PatStruct, Path, PrimTy};
 use syntax::ast::{TraitRef, Ty, TyBool, TyChar, TyF32};
 use syntax::ast::{TyF64, TyFloat, TyIs, TyI8, TyI16, TyI32, TyI64, TyInt};
 use syntax::ast::{TyPath, TyPtr};
