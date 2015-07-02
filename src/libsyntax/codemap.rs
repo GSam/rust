@@ -20,6 +20,7 @@
 pub use self::MacroFormat::*;
 
 use std::cell::RefCell;
+use std::collections::HashMap;
 use std::ops::{Add, Sub};
 use std::rc::Rc;
 
@@ -532,7 +533,8 @@ impl FileMap {
 
 pub struct CodeMap {
     pub files: RefCell<Vec<Rc<FileMap>>>,
-    expansions: RefCell<Vec<ExpnInfo>>
+    expansions: RefCell<Vec<ExpnInfo>>,
+    mapping: RefCell<HashMap<FileName, Rc<FileMap>>>
 }
 
 impl CodeMap {
@@ -540,10 +542,16 @@ impl CodeMap {
         CodeMap {
             files: RefCell::new(Vec::new()),
             expansions: RefCell::new(Vec::new()),
+            mapping: RefCell::new(HashMap::new())
         }
     }
 
     pub fn new_filemap(&self, filename: FileName, mut src: String) -> Rc<FileMap> {
+        let mut mapping = self.mapping.borrow_mut();
+        if let Some(file) = mapping.get(&filename) {
+            return file.clone();
+        }
+
         let mut files = self.files.borrow_mut();
         let start_pos = match files.last() {
             None => 0,
@@ -567,7 +575,7 @@ impl CodeMap {
         let end_pos = start_pos + src.len();
 
         let filemap = Rc::new(FileMap {
-            name: filename,
+            name: filename.clone(),
             src: Some(Rc::new(src)),
             start_pos: Pos::from_usize(start_pos),
             end_pos: Pos::from_usize(end_pos),
@@ -576,6 +584,7 @@ impl CodeMap {
         });
 
         files.push(filemap.clone());
+        mapping.insert(filename, filemap.clone());
 
         filemap
     }
